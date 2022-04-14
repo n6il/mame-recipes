@@ -41,6 +41,18 @@
         mame -window swtpc -io5:dc5:fdc:0 dssd -flop1 FLEX2-DS.DSK
 
 # Notes
+## MAME Settings and Options
+* The `swtpc` machine has a default setting for `SWTBUG_LOAD_AT_A100` which will not work for regular FLEX images.  Regular FLEX loads at `$2600`.  The fix is to disable this setting by setting it to `0`.  The config below has already been set in `swtpc.cfg`:
+```
+<mameconfig version="10">
+    <system name="swtpc">
+        <input>
+            <port tag=":SWTBUG_LOAD_AT_A100" type="CONFIG" mask="1" defvalue="1" value="0" />
+        </input>
+    </system>
+</mameconfig>
+```
+
 ## Disk Images
 
 |Size|Sides|Density|FormFactor|Tracks|MAME|
