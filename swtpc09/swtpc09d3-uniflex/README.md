@@ -20,7 +20,7 @@ UniFLEX can be booted from floppy or winchester Disk.  Quickstart walks you thro
 
 ## Variations
 ### Booting Uniflex from a Floppy Disk
-*** BEWARE *** This will eat your disk images.  It is highly recomended to make backups.
+** BEWARE ** This will eat your disk images.  It is highly recomended to make backups.
 
 1. Using MAME GUI
         1. Copy the `swtpc09d3-fd0.ini` file into your MAME `inipath` directory
@@ -39,13 +39,71 @@ UniFLEX can be booted from floppy or winchester Disk.  Quickstart walks you thro
         io0:mps2:rs232_lower null_modem
 
 
-## Disk Images
+## Floppy Disk Images
 
-|Size|Sides|Density|FormFactor|Tracks|MAME|
-|----|-----|-------|----------|------|----|
-|315392|Single|Single|8"|77|`8sssd`|
-|630784|Double|Single|8"|77|`8dssd`|
-|1261568|Double|Double|8"|77|`8dsdd`|
+|Size|Sides|Density|FormFactor|Tracks|Sectors|MAME|
+|----|-----|-------|----------|------|-------|----|
+|315392|Single|Single|8"|77|8|`8sssd`|
+|630784|Double|Single|8"|77|8|`8dssd`|
+|630784|Single|Single|8"|77|16|`8dssd`|
+|1261568|Double|Double|8"|77|16|`8dsdd`|
+
+UniFLEX numbers disk sectors on double sided disks differently than most other computers.  This means that some tools may not work properly with them.  For example, a Double Sided Double Density disk has the sectors numbered as follows:
+
+|Cylender|Head|Sectors|
+|--------|----|-------|
+| 0      | 0  | 1-16  |
+| 0      | 1  | 17-32 |
+|...|
+
+
+## Winchester Disk Images
+
+UniFLEX supports a number of different types and sizes of winchester disks.  MAME has support
+for the DMAF3+WD1000 Controller setup.   The UniFLEX `/etc/formatwd1000` command formats the
+winchester disk drives.  You can get a list of supported devices by running 
+
+    /etc/formatwd1000 +M
+
+and then answering `Y` to list all the available disk formats.  A subset of those drives and their CHS values is listed in the [UniFLEX Utility Commands](https://github.com/kees1948/UniFLEX/blob/master/Documents/Manuals/UniFLEX/Utility%20Commands.pdf) manual page 66.  On page 65 the manual also
+says that the default drive is a Computer Memories CMI-5619.  The CHS for this drive is 306, 6, 17.  
+
+### Creating a CHD Image
+ 
+To create a CHD image for the CMI-5619 drive run:
+
+    chdman createhd -o cmi5619-test.chd -c 306,6,17
+
+### Formatting a CHD Image
+Once you have the CHD image, you can attach it to MAME and format it.  For example, you can
+attach it as a second hard drive either by adding it to your ini file
+or adding `-hard2 cmi5619-test.chd` on the command line.  Now you can format the drive:
+
+    /etc/formatwd1000 +d=/dev/wd1  +m=CMI-5619
+
+After the drive is formatted you can mount it:
+
+    /etc/mount /dev/wd1 /usr3
+
+### Using Pre-Made Hard Drive Images
+
+It is possible to create a CHD image from an existing winchester disk image file.  For example, the `uni-cmi5619-boot.chd` hard drive image provided in this repository came from the Evenson Consulting SWTPC Emulator package.
+
+    \ProgramData\EvensonConsultingServices\SWTPCmemulator\DISKS\wd0.DSK
+
+In order to convert this into a CHD image you need to determine the CHS of the image itself.  First, start with the file size:
+
+    -rw-r--r-- 1 pi pi 15980544 Apr 12 18:45 wd0.DSK
+
+Well we don't know the exact CHS for this image, but based on the information above we should probably start with the default Computer Memories CMI-5619 drive.  The CHS for this drive is 306, 6, 17.  Multiplying this out yields:
+
+
+    306 * 6 * 17 = 15980544
+
+Since this is an exact match it should work out.  Create the CHD image as above which has been initialized with the `wd0.DSK` image:
+
+    chdman createhd -chs 306,6,17 -o /tmp/wd0.chd -i wd0.DSK 
+
 
 # Sources & References
  
