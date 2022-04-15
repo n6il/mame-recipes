@@ -20,7 +20,7 @@ UniFLEX can be booted from floppy or winchester Disk.  Quickstart walks you thro
 
 ## Variations
 ### Booting Uniflex from a Floppy Disk
-** BEWARE ** This will eat your disk images.  It is highly recomended to make backups.
+** BEWARE ** MAME has a bug where the disk image will be corrupted when the emulated comptuer writes to the disk.  It is highly recomended to make backups.
 
 1. Using MAME GUI
         1. Copy the `swtpc09d3-fd0.ini` file into your MAME `inipath` directory
@@ -29,7 +29,7 @@ UniFLEX can be booted from floppy or winchester Disk.  Quickstart walks you thro
 
 2. Command Line
 
-        mame -window swtpc09d3 -flop1 UNIFLEXFLOPPYBOOT.DSK
+        mame -window swtpc09d3 -io0:mps2:rs232_lower null_modem -flop1 UNIFLEXFLOPPYBOOT.DSK
 
 
 # Notes
@@ -41,12 +41,12 @@ UniFLEX can be booted from floppy or winchester Disk.  Quickstart walks you thro
 
 ## Floppy Disk Images
 
-|Size|Sides|Density|FormFactor|Tracks|Sectors|MAME|
+|Size|Sides|Density|FormFactor|Cylenders|Sectors/Cyl|MAME|
 |----|-----|-------|----------|------|-------|----|
-|315392|Single|Single|8"|77|8|`8sssd`|
-|630784|Double|Single|8"|77|8|`8dssd`|
-|630784|Single|Single|8"|77|16|`8dssd`|
-|1261568|Double|Double|8"|77|16|`8dsdd`|
+|315,392|Single|Single|8"|77|8|`8sssd`|
+|630,784|Double|Single|8"|77|8|`8dssd`|
+|630,784|Single|Single|8"|77|16|`8dssd`|
+|1,261,568|Double|Double|8"|77|16|`8dsdd`|
 
 UniFLEX numbers disk sectors on double sided disks differently than most other computers.  This means that some tools may not work properly with them.  For example, a Double Sided Double Density disk has the sectors numbered as follows:
 
@@ -76,7 +76,7 @@ To create a CHD image for the CMI-5619 drive run:
 
 ### Formatting a CHD Image
 Once you have the CHD image, you can attach it to MAME and format it.  For example, you can
-attach it as a second hard drive either by adding it to your ini file
+attach it as a second hard drive either by adding it to your ini file (without the leading `-`)
 or adding `-hard2 cmi5619-test.chd` on the command line.  Now you can format the drive:
 
     /etc/formatwd1000 +d=/dev/wd1  +m=CMI-5619
